@@ -1,0 +1,162 @@
+// P_3_2_2_01
+//
+// Generative Gestaltung – Creative Coding im Web
+// ISBN: 978-3-87439-902-9, First Edition, Hermann Schmidt, Mainz, 2018
+// Benedikt Groß, Hartmut Bohnacker, Julia Laub, Claudius Lazzeroni
+// with contributions by Joey Lee and Niels Poldervaart
+// Copyright 2018
+//
+// http://www.generative-gestaltung.de
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/**
+ * fontgenerator with dynamic elements
+ *
+ * MOUSE
+ * position x          : curve rotation
+ * position y          : curve height
+ *
+ * KEYS
+ * a-z                 : text input (keyboard)
+ * del, backspace      : remove last letter
+ * alt                 : toggle fill style
+ * ctrl                : save png
+ */
+
+var textTyped = 'Hello World';
+
+var font;
+
+var filled = false;
+let path;
+let movers = [];
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  noLoop();
+
+  opentype.load('data/Affogato-Regular.otf', function(err, f) {
+    if (err) {
+      print(err);
+    } else {
+      font = f;
+
+      if (textTyped.length > 0) {
+        // get a path from OpenType.js
+        var fontPath = font.getPath(textTyped, 0, 0, 200);
+        // convert it to a g.Path object
+        path = new g.Path(fontPath.commands);
+        // resample it with equidistant points
+        path = g.resampleByLength(path, 20);
+        // path = g.resampleByAmount(path, 500);
+
+        // map mouse axis
+        // var addToAngle = map(mouseX, 0, width, -PI, PI);
+        // var curveHeight = map(mouseY, 0, height, 0.1, 2);
+
+        path.commands.forEach(pt => {
+        	movers.push(new Mover(pt.x, pt.y, 20))
+        })
+      }
+
+      loop();
+    }
+  });
+}
+
+function draw() {
+  if (!font) return;
+
+  background(255, 255, 255, 20);
+  if (filled) {
+    noStroke();
+    fill(0);
+  } else {
+    noFill();
+    stroke(0);
+    strokeWeight(2);
+  }
+
+  // margin border
+  translate(20, 260);
+
+  movers.forEach(mover =>{
+  	mover.update();
+  	mover.display();
+  })
+  
+}
+
+
+class Mover{
+	constructor(x, y, mass){
+		this.x = x;
+		this.y = y;
+		this.mass = mass;
+
+		this.angle = 0;
+		this.angularVelocity = 0;
+		this.angularAcceleration = 0.01;
+
+		this.location = createVector(this.x, this.y);
+		this.velocity = createVector(0,0);
+		this.acceleration = createVector(0,0);
+	}
+}
+
+Mover.prototype.update = function(){
+	
+	this.angularVelocity += this.angularAcceleration;
+	this.angle += this.angularVelocity;
+	if(this.angularVelocity > 3){
+		this.angularVelocity= 3;
+	}
+
+	let distorterX = map(mouseX, 0, width, -2, 2)
+	let distorterY = map(mouseY, 0, height, -2, 2)
+
+	// this.acceleration = createVector(random(-0.5, 0.5), random(-0.5, 0.5))
+	this.acceleration = createVector(distorterX, distorterY)
+
+	this.velocity.add(this.acceleration)
+	this.location.add(this.velocity)
+
+	this.velocity.limit(0.01)
+
+	this.acceleration.mult(0)
+}
+
+Mover.prototype.display = function(){
+
+	push();
+	translate(this.location.x, this.location.y)
+	rotate(radians(this.angle));
+	ellipse(0, 0, this.mass/2, this.mass/2);
+	// line(-this.mass/2, 0, this.mass/2, 0)
+	pop();
+}
+
+function keyReleased() {
+  if (keyCode == ALT) filled = !filled;
+}
+
+function keyPressed() {
+  if (keyCode == DELETE || keyCode == BACKSPACE) {
+    if (textTyped.length > 0) {
+      textTyped = textTyped.substring(0, textTyped.length - 1);
+    }
+  }
+}
+
+function keyTyped() {
+  if (keyCode >= 32) {
+    textTyped += key;
+  }
+}
