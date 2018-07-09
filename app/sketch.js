@@ -54,7 +54,7 @@ function setup() {
         // convert it to a g.Path object
         path = new g.Path(fontPath.commands);
         // resample it with equidistant points
-        path = g.resampleByLength(path, 20);
+        path = g.resampleByLength(path, 4);
         // path = g.resampleByAmount(path, 500);
 
         // map mouse axis
@@ -62,7 +62,7 @@ function setup() {
         // var curveHeight = map(mouseY, 0, height, 0.1, 2);
 
         path.commands.forEach(pt => {
-        	movers.push(new Mover(pt.x, pt.y, 20))
+        	movers.push(new Mover(pt.x, pt.y, 4))
         })
       }
 
@@ -122,13 +122,13 @@ Mover.prototype.update = function(){
 	let distorterX = map(mouseX, 0, width, -2, 2)
 	let distorterY = map(mouseY, 0, height, -2, 2)
 
-	// this.acceleration = createVector(random(-0.5, 0.5), random(-0.5, 0.5))
-	this.acceleration = createVector(distorterX, distorterY)
+	if(mouseIsPressed) this.acceleration = createVector(random(-0.25, 0.25), random(-0.25, 0.25))
+	// this.acceleration = createVector(distorterX, distorterY)
 
 	this.velocity.add(this.acceleration)
 	this.location.add(this.velocity)
 
-	this.velocity.limit(0.01)
+	this.velocity.limit(1)
 
 	this.acceleration.mult(0)
 }
@@ -138,8 +138,9 @@ Mover.prototype.display = function(){
 	push();
 	translate(this.location.x, this.location.y)
 	rotate(radians(this.angle));
-	ellipse(0, 0, this.mass/2, this.mass/2);
-	// line(-this.mass/2, 0, this.mass/2, 0)
+	// ellipse(0, 0, this.mass/2, this.mass/2);
+	line(-this.mass/2, 0, this.mass/2, 0)
+	// line(0, 0, this.mass, 0)
 	pop();
 }
 
