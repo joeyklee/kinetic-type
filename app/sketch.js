@@ -31,7 +31,7 @@
  * ctrl                : save png
  */
 
-var textTyped = 'Hello World';
+var textTyped = 'Hello Bye';
 
 var font;
 
@@ -54,15 +54,27 @@ function setup() {
         // convert it to a g.Path object
         path = new g.Path(fontPath.commands);
         // resample it with equidistant points
-        path = g.resampleByLength(path, 4);
+        path = g.resampleByLength(path, 30);
         // path = g.resampleByAmount(path, 500);
 
         // map mouse axis
         // var addToAngle = map(mouseX, 0, width, -PI, PI);
         // var curveHeight = map(mouseY, 0, height, 0.1, 2);
 
-        path.commands.forEach(pt => {
-        	movers.push(new Mover(pt.x, pt.y, 4))
+        let counter = 0;
+        path.commands.forEach( (pt, idx) => {
+        	if(pt.type == "M"){
+        		counter++;
+
+        		if(counter > 5){
+        			movers.push(new Mover(pt.x, pt.y, 4, true))	
+        		} else{
+        			movers.push(new Mover(pt.x, pt.y, 4, false))	
+        		}
+        	} else{
+        		movers.push(new Mover(pt.x, pt.y, 4, false))
+        	}
+        	
         })
       }
 
@@ -87,19 +99,27 @@ function draw() {
   // margin border
   translate(20, 260);
 
-  movers.forEach(mover =>{
-  	mover.update();
-  	mover.display();
+  movers.forEach( (mover1, idx1) =>{
+  	movers.forEach( (mover2, idx2) => {
+  		if(idx1 !== idx2 && mover1.attractor == false){
+  		  let moverAttractionforce = mover2.attract(mover1)
+  		  mover1.applyForce(moverAttractionforce)
+  		}
+  	})
+  	mover1.update();
+  	mover1.display();
   })
   
 }
 
 
 class Mover{
-	constructor(x, y, mass){
+	constructor(x, y, mass, attractor){
 		this.x = x;
 		this.y = y;
 		this.mass = mass;
+		this.G = 10;
+		this.attractor = attractor || false;
 
 		this.angle = 0;
 		this.angularVelocity = 0;
@@ -111,13 +131,38 @@ class Mover{
 	}
 }
 
+Mover.prototype.attract = function( _mover ){
+
+  let force = p5.Vector.sub(this.location, _mover.location)
+
+  let distance = force.mag();
+  distance = constrain(distance,10.0,100.0);
+  force.normalize();
+
+  let strength = (this.G * this.mass * _mover.mass) / (distance * distance);
+
+  force.mult(strength);
+
+  return force;
+
+}
+
+Mover.prototype.applyForce = function( force ){
+
+  let f = force.copy();
+  // force = mass * acceleration
+  f.div(this.mass)
+  this.acceleration.add(f);
+
+}
+
 Mover.prototype.update = function(){
 	
-	this.angularVelocity += this.angularAcceleration;
-	this.angle += this.angularVelocity;
-	if(this.angularVelocity > 3){
-		this.angularVelocity= 3;
-	}
+	// this.angularVelocity += this.angularAcceleration;
+	// this.angle += this.angularVelocity;
+	// if(this.angularVelocity > 3){
+	// 	this.angularVelocity= 3;
+	// }
 
 	let distorterX = map(mouseX, 0, width, -2, 2)
 	let distorterY = map(mouseY, 0, height, -2, 2)
@@ -125,12 +170,14 @@ Mover.prototype.update = function(){
 	if(mouseIsPressed) this.acceleration = createVector(random(-0.25, 0.25), random(-0.25, 0.25))
 	// this.acceleration = createVector(distorterX, distorterY)
 
-	this.velocity.add(this.acceleration)
-	this.location.add(this.velocity)
 
-	this.velocity.limit(1)
+		this.velocity.add(this.acceleration)
+		this.location.add(this.velocity)
 
-	this.acceleration.mult(0)
+		this.velocity.limit(1)
+
+		this.acceleration.mult(0)	
+	
 }
 
 Mover.prototype.display = function(){
