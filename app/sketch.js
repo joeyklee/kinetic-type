@@ -31,7 +31,7 @@
  * ctrl                : save png
  */
 
-var textTyped = 'Hello Bye';
+var textTyped = 'A';
 
 var font;
 
@@ -54,7 +54,7 @@ function setup() {
         // convert it to a g.Path object
         path = new g.Path(fontPath.commands);
         // resample it with equidistant points
-        path = g.resampleByLength(path, 30);
+        path = g.resampleByLength(path, 6);
         // path = g.resampleByAmount(path, 500);
 
         // map mouse axis
@@ -65,15 +65,16 @@ function setup() {
         path.commands.forEach( (pt, idx) => {
         	if(pt.type == "M"){
         		counter++;
-
-        		if(counter > 5){
+        	}
+        	else{
+        		if(counter){
         			movers.push(new Mover(pt.x, pt.y, 4, true))	
         		} else{
         			movers.push(new Mover(pt.x, pt.y, 4, false))	
         		}
-        	} else{
-        		movers.push(new Mover(pt.x, pt.y, 4, false))
-        	}
+
+        		// movers.push(new Mover(pt.x, pt.y, 4, false))
+        	} 
         	
         })
       }
@@ -97,13 +98,13 @@ function draw() {
   }
 
   // margin border
-  translate(20, 260);
+  translate(300, 300);
 
   movers.forEach( (mover1, idx1) =>{
   	movers.forEach( (mover2, idx2) => {
-  		if(idx1 !== idx2 && mover1.attractor == false){
-  		  let moverAttractionforce = mover2.attract(mover1)
-  		  mover1.applyForce(moverAttractionforce)
+  		if(idx1 !== idx2){
+  				let moverAttractionforce = mover2.attract(mover1)
+	  		  mover1.applyForce(moverAttractionforce)	
   		}
   	})
   	mover1.update();
@@ -118,7 +119,7 @@ class Mover{
 		this.x = x;
 		this.y = y;
 		this.mass = mass;
-		this.G = 10;
+		this.G = 0.1;
 		this.attractor = attractor || false;
 
 		this.angle = 0;
@@ -132,20 +133,45 @@ class Mover{
 }
 
 Mover.prototype.attract = function( _mover ){
+	let force = p5.Vector.sub(this.location, _mover.location)
 
-  let force = p5.Vector.sub(this.location, _mover.location)
+	let distance = force.mag();
+	distance = constrain(distance,100.0,200.0);
+	force.normalize();
 
-  let distance = force.mag();
-  distance = constrain(distance,10.0,100.0);
-  force.normalize();
+	let strength = (this.G * this.mass * _mover.mass) / (distance * distance);
 
-  let strength = (this.G * this.mass * _mover.mass) / (distance * distance);
 
-  force.mult(strength);
+	if(_mover.attractor == true){
+		
+		force.mult(strength);
+
+	} else{
+		force.mult(0);
+	}
 
   return force;
 
 }
+
+Mover.prototype.repel = function( _mover ){
+	let force = p5.Vector.sub(_mover.location, createVector(this.x, this.y))
+
+	let distance = force.mag();
+	distance = constrain(distance,100.0,200.0);
+	force.normalize();
+
+	let strength = (this.G * this.mass * _mover.mass) / (distance * distance);
+
+		
+	force.mult(strength);
+
+
+  return force;
+
+}
+
+
 
 Mover.prototype.applyForce = function( force ){
 
@@ -186,13 +212,17 @@ Mover.prototype.display = function(){
 	translate(this.location.x, this.location.y)
 	rotate(radians(this.angle));
 	// ellipse(0, 0, this.mass/2, this.mass/2);
+	stroke(0,0,0, 50)
+	// fill(0,0,0, 10)
 	line(-this.mass/2, 0, this.mass/2, 0)
 	// line(0, 0, this.mass, 0)
 	pop();
 }
 
 function keyReleased() {
-  if (keyCode == ALT) filled = !filled;
+  if (keyCode == ALT) {
+
+  }
 }
 
 function keyPressed() {
@@ -207,4 +237,5 @@ function keyTyped() {
   if (keyCode >= 32) {
     textTyped += key;
   }
+  // if(keyCode )
 }
