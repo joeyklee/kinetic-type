@@ -168,11 +168,11 @@ Mover.prototype.display = function(){
 	translate(this.location.x, this.location.y)
 	rotate(radians(this.angle));
   // stroke(246, 246, 247)
-  noStroke();
+  // noStroke();
   fill(168, 227,235)
-  // stroke(255)
-  // strokeWeight(4)
-	ellipse(0, 0, this.mass, this.mass);
+  stroke(255)
+  strokeWeight(3)
+	// ellipse(0, 0, this.mass*2, this.mass*2);
 	
 	// fill(0,0,0, 10)
 	line(-this.mass/2, 0, this.mass/2, 0)
