@@ -62,14 +62,14 @@ function draw() {
   if (!font) return;
   randomSeed(1)
 
-  background(255, 255, 255, 20);
+  background(243, 228, 235);
 
   // margin border
-  translate(300, 300);
+  translate(200, 400);
 
   movers.forEach( (mover1, idx1) =>{
 
-    if(frameCount > 150){
+    if(frameCount > 50){
 
 
     let attractionForce = attractors[int(random(0,attractors.length))].attract(mover1);
@@ -110,7 +110,7 @@ Mover.prototype.attract = function( _mover ){
 	let force = p5.Vector.sub(this.location, _mover.location)
 
 	let distance = force.mag();
-	distance = constrain(distance,1.0,2.0);
+	distance = constrain(distance,1.0,1.0);
 	force.normalize();
 
 	let strength = (this.G * this.mass * _mover.mass) / (distance * distance);	
@@ -167,8 +167,13 @@ Mover.prototype.display = function(){
 	push();
 	translate(this.location.x, this.location.y)
 	rotate(radians(this.angle));
-	// ellipse(0, 0, this.mass/2, this.mass/2);
-	stroke(0,0,0, 50)
+  // stroke(246, 246, 247)
+  noStroke();
+  fill(168, 227,235)
+  // stroke(255)
+  // strokeWeight(4)
+	ellipse(0, 0, this.mass, this.mass);
+	
 	// fill(0,0,0, 10)
 	line(-this.mass/2, 0, this.mass/2, 0)
 	// line(0, 0, this.mass, 0)
@@ -186,11 +191,11 @@ Mover.prototype.display = function(){
 function createFontPaths(textTyped, font, attractorStatus){
   let output = [];
   // get a path from OpenType.js
-  var fontPath = font.getPath(textTyped, 0, 0, 200);
+  var fontPath = font.getPath(textTyped, 0, 0, 300);
   // convert it to a g.Path object
   path = new g.Path(fontPath.commands);
   // resample it with equidistant points
-  path = g.resampleByLength(path, 2);
+  path = g.resampleByLength(path, 4);
   // path = g.resampleByAmount(path, 500);
 
   path.commands.forEach( (pt, idx) => {
