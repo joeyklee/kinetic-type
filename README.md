@@ -1,5 +1,16 @@
+---
+link: 100-days-of-making/day020
+---
+
 # Kinetic Type 
 
-This is a demo repo for developing kinetic type sketches with p5.js and opentype.js
+## Description
+
+"Hello ==> Bye" 
+
+Little movers make their way to seemingly random attractors 
+
+## Tags
+@p5xjs, #opentypejs and @thecodingtrain #dailysketches #kinetictypography #natureofcode
 
  
