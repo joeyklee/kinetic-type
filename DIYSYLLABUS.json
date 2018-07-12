@@ -1,0 +1,75 @@
+{
+"title": "Kinetic Type Project",
+"description": "a little project to demo kinetic type potential using p5.js and opentype.js",
+"difficulty": "Intermediate",
+"requirements": [
+    "assumes knowledge of processing/p5.js vectors", 
+    "assumes basic working knowledge of javascript loops, conditionals, and ES6 array functions",
+    "assumes knowledge of object oriented programming and class/constructors"
+],
+"buildingBlocks":[
+	{
+		"name":"Concept",
+		"position":0,
+		"description":"Description for the concept phase",
+		"difficulty":"Beginner - Intermediate",
+		"resources":[
+			{
+				"name":"", 
+				"desc":"", 
+				"url":""
+			},{
+				"name":"", 
+				"desc":"", 
+				"url":""
+			},{
+				"name":"", 
+				"desc":"", 
+				"url":""
+			}
+		]
+	},
+	{
+		"name":"Intermediate Javascript",
+		"position":1,
+		"description":"Resources on intermediate javascript",
+		"difficulty":"Beginner - Intermediate",
+		"resources":[
+			{
+				"name":"", 
+				"desc":"", 
+				"url":""
+			},{
+				"name":"", 
+				"desc":"", 
+				"url":""
+			},{
+				"name":"", 
+				"desc":"", 
+				"url":""
+			}
+		]
+	},
+	{
+		"name":"OpenType.js",
+		"position":2,
+		"description":"intro to the opentype.js library",
+		"difficulty":"Beginner - Intermediate",
+		"resources":[
+			{
+				"name":"", 
+				"desc":"", 
+				"url":"https://opentype.js.org/"
+			},{
+				"name":"", 
+				"desc":"", 
+				"url":""
+			},{
+				"name":"", 
+				"desc":"", 
+				"url":""
+			}
+		]
+	}
+]
+}
